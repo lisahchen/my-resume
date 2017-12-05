@@ -16,7 +16,7 @@ class Professor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     department = db.Column(db.Text)
-    courses = db.relationship('Course', backref='professor')
+    courses = db.relationship('Course', backref='professor', cascade='delete')
 
 
 class Course(db.Model):
@@ -40,7 +40,7 @@ def show_all_professors():
 
 
 @app.route('/professor/add', methods=['GET', 'POST'])
-def add_professorss():
+def add_professors():
     if request.method == 'GET':
         return render_template('professor-add.html')
     if request.method == 'POST':
@@ -63,6 +63,18 @@ def edit_professors(id):
         # Get data from form
         professor.name = request.form['name']
         professor.department = request.form['department']
+        db.session.commit()
+        return redirect(url_for('show_all_professors'))
+
+
+@app.route('/professor/delete/<int:id>', methods=['GET', 'POST'])
+def delete_professors(id):
+    professor = Professor.query.filter_by(id=id).first()
+    if request.method == 'GET':
+        return render_template('professor-delete.html', professor=professor)
+    if request.method == 'POST':
+        # Get data from form
+        db.session.delete(professor)
         db.session.commit()
         return redirect(url_for('show_all_professors'))
 
@@ -109,6 +121,19 @@ def edit_courses(id):
         return redirect(url_for('show_all_courses'))
 
 
+@app.route('/course/delete/<int:id>', methods=['GET', 'POST'])
+def delete_courses(id):
+    course = Course.query.filter_by(id=id).first()
+    professors = Professor.query.all()
+    if request.method == 'GET':
+        return render_template('course-delete.html', course=course, professors=professors)
+    if request.method == 'POST':
+        # Get data from form
+        db.session.delete(course)
+        db.session.commit()
+        return redirect(url_for('show_all_courses'))
+
+
 @app.route('/my-courses')
 def get_all_courses():
     courses = [
@@ -116,7 +141,7 @@ def get_all_courses():
         'CISC355 Computers, Ethics, and Society',
         'MATH201 Introduction to Statistical Methods I'
     ]
-    return render_template('courses.html', courses=courses)
+    return render_template('my-courses.html', courses=courses)
 
 
 @app.route('/about')

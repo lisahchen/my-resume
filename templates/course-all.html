@@ -7,7 +7,7 @@
 
 {% block page_content %}
   <div class="container">
-    <h1 class="mt-5"><i class="fa fa-music" aria-hidden="true"></i>All Courses:</h1>
+    <h1 class="mt-5"><i class="fa fa-user-circle-o" aria-hidden="true"></i>All Courses:</h1>
     <div class="row bottom-margin">
       <a href="/course/all" class="btn btn-primary" role="button" aria-disabled="true">All Courses</a>
     </div>
@@ -55,6 +55,7 @@
           <td>{{course.professor.name}}</td>
           <td>
             <a href="/course/edit/{{course.id}}" class="btn btn-success" role="button" aria-disabled="true">Edit</a>
+            <a href="/course/delete/{{course.id}}" class="btn btn-danger" role="button" aria-disabled="true">Delete</a>
           </td>
         </tr>
       {% endfor%}
